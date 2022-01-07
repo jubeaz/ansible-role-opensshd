@@ -1,0 +1,24 @@
+---
+
+- include_tasks: variables.yml
+- include_tasks: asserts.yml
+
+- include_tasks: ubuntu.yml
+  when: ansible_distribution == "Ubuntu"
+- include_tasks: arch.yml
+  when: ansible_distribution == "Archlinux"
+
+- name: Get installed packages
+  package_facts:
+    manager: "auto"
+
+- name: Create sshd_config file
+  template:
+    dest: "/etc/ssh/sshd_config"
+    src: "templates/sshd_config.j2"
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart sshd
+  when: "'openssl' in ansible_facts.packages"
+
