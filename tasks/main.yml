@@ -11,6 +11,13 @@
 - name: Get installed packages
   package_facts:
     manager: "auto"
+- name: Copy issue file
+  copy:
+    dest: "/etc/{{ _sshd_issue_filename }}"
+    src: files/issue
+    owner: root
+    group: root
+    mode: 0644
 
 - name: Create sshd_config file
   template:
