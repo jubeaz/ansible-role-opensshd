@@ -1,16 +1,24 @@
 ---
+- name: assert proper distribution
+  assert:
+    that:
+      - ansible_distribution in ['Kali', 'Ubuntu', 'Archlinux']
+    quiet: true
 
-- include_tasks: variables.yml
+- name: Include OS-specific variables
+  include_vars: "{{ ansible_distribution }}.yml"
+
+- name: Include common variables
+  include_vars: "common.yml"
+
 - include_tasks: asserts.yml
 
-- include_tasks: ubuntu.yml
-  when: ansible_distribution == "Ubuntu"
-- include_tasks: arch.yml
-  when: ansible_distribution == "Archlinux"
+- include_tasks: "{{ ansible_distribution }}.yml" 
 
 - name: Get installed packages
   package_facts:
     manager: "auto"
+
 - name: Copy issue file
   copy:
     dest: "/etc/{{ _sshd_issue_filename }}"
